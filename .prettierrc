@@ -1,0 +1,6 @@
+{
+    "tabWidth": 4,
+    "svelteIndentScriptAndStyle": true,
+    "printWidth": 120,
+    "semi": true
+}

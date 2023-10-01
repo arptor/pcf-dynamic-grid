@@ -1,0 +1,16 @@
+{
+    "extends": "./node_modules/pcf-scripts/tsconfig_base.json",
+    "compilerOptions": {
+        "typeRoots": ["node_modules/@types"],
+
+        "lib": ["esnext", "DOM", "DOM.Iterable"],
+        "moduleResolution": "node",
+        "module": "ES6",
+        "target": "ES6",
+        "types": ["node", "svelte", "powerapps-component-framework"]
+        // "paths": {
+        //     "@components": ["./dynamicGrid/components/index.ts"]
+        // }
+    },
+    "include": ["./dynamicGrid/**/*"]
+}
