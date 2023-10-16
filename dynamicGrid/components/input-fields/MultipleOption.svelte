@@ -1,18 +1,24 @@
 <script lang="ts">
-    import type { IMultipleSelect } from "../../definitions/attributes-metadata/metadataDefinitions";
-    import { AttributeMetadataTypes, MetadataService } from "../../services/metadataService";
+    import type { IGlobalAttribute, IMultipleSelect } from "../../definitions/attributes-metadata/metadataDefinitions";
+    import type { IGenericFieldProps } from "./IGenericField";
+    import { AttributeMetadataTypes, MetadataWebService } from "../../services/metadata-web-service";
     import { clickOutside } from "../../utils/clickOutside";
 
-    export let column: ComponentFramework.PropertyHelper.DataSetApi.Column;
-    export let metadataService: MetadataService;
+    interface $$Props extends IGenericFieldProps {}
+
+    export let meta: IGlobalAttribute;
+    export let metadataService: MetadataWebService;
 
     let showDropdown: boolean = false;
     let selection: string[] = [];
 
-    const multiSeleMetadata = metadataService.getAttributeDefinition(
-        column.name,
+    $: fieldName = meta.LogicalName;
+    $: displayName = meta.DisplayName;
+
+    const multiSeleMetadata = metadataService.getAttributeDefinition<IMultipleSelect>(
+        fieldName,
         AttributeMetadataTypes.MultiSelect
-    ) as Promise<IMultipleSelect>;
+    );
 
     function closeOptions() {
         showDropdown = false;
@@ -23,14 +29,14 @@
     <button type="button" on:click={() => (showDropdown = !showDropdown)}> Options </button>
 
     <fieldset style:--_showlist={showDropdown ? "flex" : "none"} use:clickOutside on:click_outside={closeOptions}>
-        <legend>{column.displayName}</legend>
+        <legend>{displayName}</legend>
         {#await multiSeleMetadata then multiSelect}
             {#each multiSelect.OptionSet.Options as option, idx}
                 <label>
                     <input
                         type="checkbox"
-                        name={column.name}
-                        id={column.name + idx}
+                        name={fieldName}
+                        id={fieldName + idx}
                         value={option.Value}
                         bind:group={selection}
                     />

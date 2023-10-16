@@ -1,14 +1,19 @@
 <script lang="ts">
-    import { IPickListAtt } from "../../definitions/attributes-metadata/metadataDefinitions";
-    import { MetadataService, AttributeMetadataTypes } from "../../services/metadataService";
+    import type { IGenericFieldProps } from "./IGenericField";
+    import { IGlobalAttribute, IPickListAtt } from "../../definitions/attributes-metadata/metadataDefinitions";
+    import { MetadataWebService, AttributeMetadataTypes } from "../../services/metadata-web-service";
 
-    export let column: ComponentFramework.PropertyHelper.DataSetApi.Column;
-    export let metadataService: MetadataService;
+    interface $$Props extends IGenericFieldProps {}
 
-    const optionsetMetadata = metadataService.getAttributeDefinition(column.name, AttributeMetadataTypes.Picklist) as Promise<IPickListAtt>;
+    export let meta: IGlobalAttribute;
+    export let metadataService: MetadataWebService;
+
+    $: fieldName = meta.LogicalName;
+    
+    const optionsetMetadata = metadataService.getAttributeDefinition(fieldName, AttributeMetadataTypes.Picklist) as Promise<IPickListAtt>;
 </script>
 
-<select name={column.name} id={`editable-${column.name}`}>
+<select name={fieldName} id={`editable-${fieldName}`}>
     {#await optionsetMetadata then pickList}
         {#each pickList.OptionSet.Options as option}
             <option value={option.Value}>

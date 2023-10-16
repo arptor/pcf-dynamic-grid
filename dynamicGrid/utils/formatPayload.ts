@@ -1,5 +1,5 @@
 import { IGlobalAttribute } from "../definitions/attributes-metadata/metadataDefinitions";
-import { AttributeMetadataTypes } from "../services/metadataService";
+import { AttributeMetadataTypes } from "../services/WebMetadataService";
 
 export function formatData({
     columnName,

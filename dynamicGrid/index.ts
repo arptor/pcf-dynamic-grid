@@ -27,7 +27,6 @@ export class dynamicGrid implements ComponentFramework.StandardControl<IInputs, 
         this._componentBody = container;
         this._componentState = state;
         this._notifyChanges = notifyOutputChanged;
-
         this._myApp = new App({
             props: {
                 // notifyChanges: this._notifyChanges,

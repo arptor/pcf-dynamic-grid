@@ -1,28 +1,21 @@
 <script lang="ts">
-    import { IBooleanMetadata } from "../../definitions/attributes-metadata/metadataDefinitions";
-    import { MetadataService, AttributeMetadataTypes } from "../../services/metadataService";
+    import type { IBoolean } from "../../definitions/attributes-metadata/IEntityMetadata";
 
-    export let column: ComponentFramework.PropertyHelper.DataSetApi.Column;
-    export let metadataService: MetadataService;
+    export let meta: IBoolean;
     let checked = false;
 
-    const booleanDefinition = metadataService.getAttributeDefinition(
-        column.name,
-        AttributeMetadataTypes.Boolean
-    ) as Promise<IBooleanMetadata>;
+    $: fieldName = meta.LogicalName;
 </script>
 
-{#await booleanDefinition then booleanMetadata}
-    <input id="{column.name}-in" type="checkbox" bind:checked />
-    {#if checked}
-        <label for="{column.name}-in">
-            {booleanMetadata.TrueOption.Label.UserLocalizedLabel.Label}
-        </label>
-        <input type="hidden" name={column.name} value={booleanMetadata.TrueOption.Value} />
-    {:else}
-        <label for="{column.name}-in">
-            {booleanMetadata.FalseOption.Label.UserLocalizedLabel.Label}
-        </label>
-        <input type="hidden" name={column.name} value={booleanMetadata.FalseOption.Value} />
-    {/if}
-{/await}
+<input id="{fieldName}-in" type="checkbox" bind:checked />
+{#if checked}
+    <label for="{fieldName}-in">
+        {meta.OptionSet.Label.UserLocalizedLabel.Label}
+    </label>
+    <input type="hidden" name={fieldName} value={booleanMetadata.TrueOption.Value} />
+{:else}
+    <label for="{fieldName}-in">
+        {booleanMetadata.FalseOption.Label.UserLocalizedLabel.Label}
+    </label>
+    <input type="hidden" name={fieldName} value={booleanMetadata.FalseOption.Value} />
+{/if}

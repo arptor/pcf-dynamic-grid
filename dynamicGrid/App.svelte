@@ -51,6 +51,9 @@ function changeFilterHandler(ev: Event) {
         <HeaderRow {columns} />
         <DataRow {columns} {rows} />
         {#if !disabled}
+            {#await  then }
+                
+            {/await}
             <InputRow
                 {columns}
                 XrmApi={xrmApi}

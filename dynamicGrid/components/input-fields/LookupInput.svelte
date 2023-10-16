@@ -4,33 +4,38 @@
         IGlobalAttribute,
         ILookupAtt,
     } from "../../definitions/attributes-metadata/metadataDefinitions";
-    import { AttributeMetadataTypes, MetadataService } from "../../services/metadataService";
+    import type { IGenericFieldProps } from "./IGenericField";
+    import { AttributeMetadataTypes, MetadataWebService } from "../../services/metadata-web-service";
 
-    export let Utils: ComponentFramework.Utility;
-    export let attributeDefinition: IGlobalAttribute;
-    export let metadataService: MetadataService;
+    interface $$Props extends IGenericFieldProps {
+        hidden?: boolean;
+        defaultValue?: string;
+        utils: ComponentFramework.Utility;
+    }
+
+    export let utils: ComponentFramework.Utility;
+    export let meta: IGlobalAttribute;
+    export let metadataService: MetadataWebService;
     export let hidden: boolean = false;
     export let defaultValue: string = "";
 
-    let lookupDefinition = metadataService.getAttributeDefinition(
-        attributeDefinition.LogicalName,
+    let lookupDefinition = metadataService.getAttributeDefinition<ILookupAtt>(
+        meta.LogicalName,
         AttributeMetadataTypes.Lookup
-    ) as Promise<ILookupAtt>;
+    );
 
     let selectedLookup: ComponentFramework.LookupValue | undefined;
     $: targetsDefinition = (async () =>
-        Promise.all(
-            (await lookupDefinition).Targets.map(async (target) => await new MetadataService(target).entityDefinition)
-        ))();
+        Promise.all((await lookupDefinition).Targets.map((target) => new MetadataWebService(target).entityDefinition)))();
 
     async function lookupHandler(targets: string[]) {
         const lookupDialogOpts: any = {
             entityTypes: targets,
         };
-        selectedLookup = (await Utils.lookupObjects(lookupDialogOpts))[0];
+        selectedLookup = (await utils.lookupObjects(lookupDialogOpts))[0];
     }
     function generateValue(entityList: IEntityMetadata[], entityType: string, recordId: string | undefined) {
-        if (!recordId) return undefined;
+        if (!recordId || !entityList) return undefined;
         const collectionName = entityList.find((a) => a.LogicalName === entityType)?.LogicalCollectionName;
         const cleanId = recordId.replace(/\{|\}/g, "").toLocaleLowerCase();
         return `${collectionName}%${cleanId}`;
@@ -43,19 +48,19 @@
             <input
                 on:click|preventDefault={() => lookupHandler(lookupMetadata.Targets)}
                 value={selectedLookup?.name ?? ""}
-                placeholder={attributeDefinition.DisplayName.UserLocalizedLabel.Label}
+                placeholder={meta.DisplayName.UserLocalizedLabel.Label}
                 readonly
                 type="text"
             />
             <input
                 value={generateValue(targetsMetadata, lookupMetadata.Targets[0], selectedLookup?.id)}
-                name={attributeDefinition.LogicalName}
+                name={meta.LogicalName}
                 type="hidden"
             />
         {:else}
             <input
                 value={generateValue(targetsMetadata, lookupMetadata.Targets[0], defaultValue)}
-                name={attributeDefinition.LogicalName}
+                name={meta.LogicalName}
                 type="hidden"
             />
         {/if}

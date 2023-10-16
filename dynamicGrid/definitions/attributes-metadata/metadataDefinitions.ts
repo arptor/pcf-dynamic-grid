@@ -1,101 +1,88 @@
-import { AttributeMetadataTypes } from "../../services/metadataService";
+import type { IOdataTypes } from "../../services/WebMetadataService";
 import { AttributeType } from "../attributeType";
 
-export type IOdataTypes = typeof AttributeMetadataTypes[keyof typeof AttributeMetadataTypes];
 export type IEntityMetadata = {
     /** The logical name for the entity. */
-    LogicalName: string
+    LogicalName: string;
     /** The logical collection name. */
-    LogicalCollectionName: string
+    LogicalCollectionName: string;
     /** The name of the Web API entity set for this entity. */
-    EntitySetName: string
+    EntitySetName: string;
     /** The schema name for the entity. (Capitalized) */
-    SchemaName: string
+    SchemaName: string;
     /** The collection schema name of the entity. (Capitalized) */
-    CollectionSchemaName: string
+    CollectionSchemaName: string;
     /** The name of the primary attribute for an entity. */
-    PrimaryNameAttribute: string
+    PrimaryNameAttribute: string;
     /** The name of the attribute that is the primary id for the entity. */
-    PrimaryIdAttribute: string
+    PrimaryIdAttribute: string;
     /** The label containing the description for the entity. */
-    Description: ILabel
+    Description: ILabel;
     /** A label containing the display name for the entity. */
-    DisplayName: ILabel
+    DisplayName: ILabel;
     /** A label containing the plural display name for the entity. */
-    DisplayCollectionName: ILabel
-}
-
+    DisplayCollectionName: ILabel;
+};
 
 export type IGlobalAttribute = {
-    "@odata.type": IOdataTypes,
-    AttributeOf: string,
-    AttributeType: keyof typeof AttributeType,
-    DefaultFormValue: number,
-    Description: ILabel,
-    DisplayName: ILabel,
-    EntityLogicalName: string,
-    LogicalName: string,
-    MetadataId: string,
-    ParentPicklistLogicalName: string,
-    RequiredLevel: IRequiredLevel,
-    SchemaName: string,
-}
+    "@odata.type": IOdataTypes;
+    AttributeOf: string;
+    AttributeType: keyof typeof AttributeType;
+    DefaultFormValue: number;
+    Description: ILabel;
+    DisplayName: ILabel;
+    EntityLogicalName: string;
+    LogicalName: string;
+    MetadataId: string;
+    ParentPicklistLogicalName: string;
+    RequiredLevel: IRequiredLevel;
+    SchemaName: string;
+};
 
 export type ILabel = {
-    LocalizedLabels: ILocalizedLabel[],
-    UserLocalizedLabel: ILocalizedLabel
-}
+    LocalizedLabels: ILocalizedLabel[];
+    UserLocalizedLabel: ILocalizedLabel;
+};
 export type ILocalizedLabel = {
-    HasChanged: boolean,
-    IsManaged: boolean,
-    Label: string,
-    LanguageCode: number,
-    MetadataId: string
-}
+    HasChanged: boolean;
+    IsManaged: boolean;
+    Label: string;
+    LanguageCode: number;
+    MetadataId: string;
+};
 export type IRequiredLevel = {
-    CanBeChanged: boolean,
-    ManagedPropertyLogicalName: string,
-    Value: 'None' | 'SystemRequired' | 'ApplicationRequired' | 'Recommended'
+    CanBeChanged: boolean;
+    ManagedPropertyLogicalName: string;
+    Value: "None" | "SystemRequired" | "ApplicationRequired" | "Recommended";
+};
+
+export interface IPickListAtt extends IGlobalAttribute {
+    OptionSet: IOptionSetAtt;
 }
 
-export type IPickListAtt = IGlobalAttribute & {
-    OptionSet: IOptionSetAtt
+export interface IMultipleSelect extends IGlobalAttribute {
+    OptionSet: IOptionSetAtt;
+}
+export interface ILookupAtt extends IGlobalAttribute {
+    Targets: string[];
 }
 
-export type IMultipleSelect = IGlobalAttribute & {
-    OptionSet: IOptionSetAtt
-}
-export type ILookupAtt = IGlobalAttribute & {
-    Targets: string[]
-}
-
+type IOption = {
+    Color: string;
+    Description: ILabel;
+    Label: ILabel;
+    MetadataId: string;
+    Value: number;
+};
 export type IOptionSetAtt = {
-    MetadataId: string,
-    Options: {
-        Color: string,
-        Description: ILabel,
-        Label: ILabel,
-        MetadataId: string,
-        Value: number,
-    }[]
-}
+    MetadataId: string;
+    Options: IOption[];
+};
 
 export type IBooleanMetadata = {
-    TrueOption: {
-        Color: string,
-        Description: ILabel,
-        Label: ILabel,
-        MetadataId: string,
-        Value: number,
-    },
-    FalseOption: {
-        Color: string,
-        Description: ILabel,
-        Label: ILabel,
-        MetadataId: string,
-        Value: number,
-    },
-    Name: string,
-    DisplayName: ILabel,
-    Description: ILabel
-}
+    TrueOption: IOption;
+    FalseOption: IOption;
+    Name: string;
+    DisplayName: ILabel;
+    Description: ILabel;
+};

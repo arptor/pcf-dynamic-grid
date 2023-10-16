@@ -18,10 +18,9 @@ export const AttributeMetadataTypes = {
     Decimal: "Microsoft.Dynamics.CRM.DecimalAttributeMetadata",
     Money: "Microsoft.Dynamics.CRM.MoneyAttributeMetadata",
     Double: "Microsoft.Dynamics.CRM.DoubleAttributeMetadata",
-    
 } as const;
-
-export class MetadataService {
+export type IOdataTypes = (typeof AttributeMetadataTypes)[keyof typeof AttributeMetadataTypes]
+export class MetadataWebService {
     readonly #entityType: string;
 
     public constructor(entityType: string) {
@@ -52,26 +51,37 @@ export class MetadataService {
         const query = API_PATH + this.#entityDefinitionFN() + this.#attributesFN(undefined);
         return this.#requestDefinition<{ value: IGlobalAttribute[] }>(query);
     }
-    getAttributeDefinition<T extends (typeof AttributeMetadataTypes)[keyof typeof AttributeMetadataTypes]>(
-        logicalName: string,
-        type: T
-    ) {
+
+    // something<T extends IGlobalAttribute,I = string | string[],R = I extends Array<string> ? IGlobalAttribute[]: IGlobalAttribute>(param: I): R{
+        
+    // }
+    
+    getAttributeDefinition<R extends IGlobalAttribute | IBooleanMetadata>(logicalName: string, type: IOdataTypes): Promise<R> {
         let query = API_PATH + this.#entityDefinitionFN() + this.#attributesFN(logicalName);
         query += "/" + type;
+        let response;
         switch (type) {
             case AttributeMetadataTypes.Lookup:
                 query += "?$select=Targets";
-                return this.#requestDefinition<ILookupAtt>(query);
+                response = this.#requestDefinition<ILookupAtt>(query);
+                break;
             case AttributeMetadataTypes.Picklist:
                 query += "?$expand=OptionSet($select=Options)";
-                return this.#requestDefinition<IPickListAtt>(query);
+                response = this.#requestDefinition<IPickListAtt>(query);
+                break;
             case AttributeMetadataTypes.MultiSelect:
                 query += "?$expand=OptionSet($select=Options)";
-                return this.#requestDefinition<IMultipleSelect>(query);
+                response = this.#requestDefinition<IMultipleSelect>(query);
+                break;
             case AttributeMetadataTypes.Boolean:
-                query += "/OptionSet?$select=TrueOption,FalseOption,Name,DisplayName,Description";
-                return this.#requestDefinition<IBooleanMetadata>(query);
+                // Doens't return values if you apply the same technique as above
+                query += "/OptionSet?$select=TrueOption,FalseOption,Name,DisplayName,Description"; 
+                response = this.#requestDefinition<IBooleanMetadata>(query);
+                break;
+            default:
+                throw new Error("Type not implemented yet");
         }
+        return response as unknown as Promise<R>;
     }
 
     #requestDefinition<T>(query: string) {
